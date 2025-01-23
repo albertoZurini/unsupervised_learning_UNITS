@@ -1,0 +1,185 @@
+{
+  "main": {
+    "id": "708e160adb41c7cd",
+    "type": "split",
+    "children": [
+      {
+        "id": "ed2b166c4e74560c",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "6568a6eb2e23786c",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "Understanding BIRCH.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "Understanding BIRCH"
+            }
+          },
+          {
+            "id": "de7b69fce6663ea7",
+            "type": "leaf",
+            "state": {
+              "type": "excalidraw",
+              "state": {
+                "file": "Excalidraw/Drawing 2025-01-22 18.55.00.excalidraw.md"
+              },
+              "icon": "excalidraw-icon",
+              "title": "Drawing 2025-01-22 18.55.00.excalidraw"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "vertical"
+  },
+  "left": {
+    "id": "1c9ec4073e8daf06",
+    "type": "split",
+    "children": [
+      {
+        "id": "03170c58a5b3759c",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "13ef8b782a36f3df",
+            "type": "leaf",
+            "state": {
+              "type": "file-explorer",
+              "state": {
+                "sortOrder": "alphabetical"
+              },
+              "icon": "lucide-folder-closed",
+              "title": "Files"
+            }
+          },
+          {
+            "id": "cc8fc25096e80a81",
+            "type": "leaf",
+            "state": {
+              "type": "search",
+              "state": {
+                "query": "",
+                "matchingCase": false,
+                "explainSearch": false,
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical"
+              },
+              "icon": "lucide-search",
+              "title": "Search"
+            }
+          },
+          {
+            "id": "6ec9da34c721347d",
+            "type": "leaf",
+            "state": {
+              "type": "bookmarks",
+              "state": {},
+              "icon": "lucide-bookmark",
+              "title": "Bookmarks"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300
+  },
+  "right": {
+    "id": "f70c5855ab302b64",
+    "type": "split",
+    "children": [
+      {
+        "id": "2af4105d1da0865c",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "06bef7a830330810",
+            "type": "leaf",
+            "state": {
+              "type": "backlink",
+              "state": {
+                "file": "Understanding BIRCH.md",
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical",
+                "showSearch": false,
+                "searchQuery": "",
+                "backlinkCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-coming-in",
+              "title": "Backlinks for Understanding BIRCH"
+            }
+          },
+          {
+            "id": "414e7e48d9230648",
+            "type": "leaf",
+            "state": {
+              "type": "outgoing-link",
+              "state": {
+                "file": "Understanding BIRCH.md",
+                "linksCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-going-out",
+              "title": "Outgoing links from Understanding BIRCH"
+            }
+          },
+          {
+            "id": "98cd507e5cbf98c5",
+            "type": "leaf",
+            "state": {
+              "type": "tag",
+              "state": {
+                "sortOrder": "frequency",
+                "useHierarchy": true
+              },
+              "icon": "lucide-tags",
+              "title": "Tags"
+            }
+          },
+          {
+            "id": "179842637b024b42",
+            "type": "leaf",
+            "state": {
+              "type": "outline",
+              "state": {
+                "file": "Understanding BIRCH.md"
+              },
+              "icon": "lucide-list",
+              "title": "Outline of Understanding BIRCH"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300,
+    "collapsed": true
+  },
+  "left-ribbon": {
+    "hiddenItems": {
+      "switcher:Open quick switcher": false,
+      "graph:Open graph view": false,
+      "canvas:Create new canvas": false,
+      "daily-notes:Open today's daily note": false,
+      "templates:Insert template": false,
+      "command-palette:Open command palette": false,
+      "obsidian-excalidraw-plugin:Create new drawing": false
+    }
+  },
+  "active": "6568a6eb2e23786c",
+  "lastOpenFiles": [
+    "Excalidraw/Drawing 2025-01-22 18.55.00.excalidraw.md",
+    "Understanding BIRCH.md",
+    "Excalidraw",
+    "Untitled.canvas"
+  ]
+}
