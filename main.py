@@ -33,46 +33,46 @@ class BIRCH:
 
     def Phase3GlobalClustering(self):
         # Perform final clustering using CF tree data
+        # Helper functions for CF Tree traversal
+        def _extract_centroids(node):
+            # Recursively extract centroids from all ClusteringFeatures in the CF Tree.
+            centroids = []
+            if node.is_leaf:
+                for cf in node.entries:
+                    centroids.append(cf.centroid())
+            else:
+                for child in node.children:
+                    centroids.extend(_extract_centroids(child))
+            return centroids
+
+        def _get_all_cfs(node):
+            # Recursively collect all CFs from the CF Tree.
+            all_cfs = []
+            if node.is_leaf:
+                all_cfs.extend(node.entries)
+            else:
+                for child in node.children:
+                    all_cfs.extend(_get_all_cfs(child))
+            return all_cfs
+
         # 1. Extract centroids from the CF Tree
-        centroids = self._extract_centroids(self.root.root)
+        centroids = _extract_centroids(self.root.root)
         if not centroids:
-            print("No centroids to perform k-means clustering.")
-            return
+            raise Exception("No centroids to perform k-means clustering.")
 
         # 2. Perform K-means clustering on the extracted centroids
-        self.kmeans = KMeans(n_clusters=4, random_state=42)
+        self.kmeans = KMeans(n_clusters=4, # HARDCODED FOR THE EXAMPLE!
+                             random_state=42)
         self.kmeans.fit(centroids)
 
         # 3. Reassign each CF to its nearest cluster
         cluster_labels = self.kmeans.labels_
-        for idx, cf in enumerate(self._get_all_cfs(self.root.root)):
+        cluster_features = _get_all_cfs(self.root.root)
+        for idx, cf in enumerate(cluster_features):
             cf.cluster_id = cluster_labels[idx]  # Assign the cluster ID to each CF
 
         for i, centroid in enumerate(self.kmeans.cluster_centers_):
             print(f"Cluster {i}: Centroid at {centroid}")
-
-    # Helper functions for CF Tree traversal
-    def _extract_centroids(self, node):
-        """Recursively extract centroids from all ClusteringFeatures in the CF Tree."""
-        centroids = []
-        if node.is_leaf:
-            for cf in node.entries:
-                centroids.append(cf.centroid())
-        else:
-            for child in node.children:
-                centroids.extend(self._extract_centroids(child))
-        return centroids
-
-    def _get_all_cfs(self, node):
-        """Recursively collect all CFs from the CF Tree."""
-        all_cfs = []
-        if node.is_leaf:
-            all_cfs.extend(node.entries)
-        else:
-            for child in node.children:
-                all_cfs.extend(self._get_all_cfs(child))
-        return all_cfs
-
 
     def Phase4ClusterRefining(self):
         # Refine the clusters, e.g., by running k-means or further splitting
