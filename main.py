@@ -1,91 +1,35 @@
 import math
+from sklearn.cluster import Birch
 
-class CFTreeNode:
-    def __init__(self, isLeaf=True):
-        self.isLeaf = isLeaf
-        self.CFs = []  # List of Clustering Features (CFs)
-        self.children = []  # List of child nodes (for internal nodes)
+import CFTree
 
 class BIRCH:
-    def __init__(self, dataPoints, branchingFactor=50, threshold=1.0, memorySize=100):
-        self.dataPoints = dataPoints
-        self.branchingFactor = branchingFactor  # Max CFs per node
+    def __init__(self, branching_factor=50, threshold=1.0):
+        self.branching_factor = branching_factor  # Max CFs per node
         self.threshold = threshold  # Threshold for clustering
-        self.root = CFTreeNode()
+        self.root = CFTree.CFTree(branching_factor=branching_factor,
+                                  threshold=threshold)
 
-    def run(self):
+    def fit(self, X):
+        self.dataPoints = X
         self.Phase1BuildCFTree()
+        print("Tree root entries:", self.root)
         self.Phase2CondenseCFTree()
         self.Phase3GlobalClustering()
         self.Phase4ClusterRefining()
+    
+    def predict(self, X):
+        pass
 
     def Phase1BuildCFTree(self):
-        # Build the CF tree by inserting points one by one
-        for dataPoint in self.dataPoints:
-            self.insert(dataPoint, self.root)
-            # Handle overflow if necessary
-            if len(self.root.CFs) > self.branchingFactor:
-                self.split_node(self.root)
-
-    def insert(self, dataPoint, node):
-        if node.isLeaf:
-            # Try to insert into an existing CF in the leaf node
-            for cf in node.CFs:
-                if self.distance(dataPoint, cf) < self.threshold:
-                    # Update the CF
-                    self.update_CF(cf, dataPoint)
-                    return True
-            # No existing CF found, create a new CF
-            node.CFs.append(self.create_CF(dataPoint))
-            return True
-        else:
-            # For internal nodes, recursively insert into child nodes
-            for child in node.children:
-                if self.distance(dataPoint, child) < self.threshold:
-                    return self.insert(dataPoint, child)
-            # If no suitable child node, create a new leaf node and split
-            node.children.append(CFTreeNode(isLeaf=True))
-            return self.insert(dataPoint, node.children[-1])
-
-    def distance(self, dataPoint, cf):
-        # Calculate the Euclidean distance between the data point and the CF
-        return math.sqrt(sum([(a - b) ** 2 for a, b in zip(dataPoint, cf['LS'])]))
-
-    def update_CF(self, cf, dataPoint):
-        # Update the CF with the new data point
-        cf['N'] += 1
-        cf['LS'] = [x + y for x, y in zip(cf['LS'], dataPoint)]  # Linear sum
-        cf['SS'] = [x + y ** 2 for x, y in zip(cf['SS'], dataPoint)]  # Squared sum
-
-    def create_CF(self, dataPoint):
-        # Create a new CF for a single data point
-        return {'N': 1, 'LS': dataPoint, 'SS': [x ** 2 for x in dataPoint]}
-
-    def split_node(self, node):
-        # Split the node into two new nodes and propagate changes up
-        newNode1, newNode2 = self.split(node)
-        # Update or create a parent node
-        if node == self.root:
-            newRoot = CFTreeNode(isLeaf=False)
-            newRoot.children = [newNode1, newNode2]
-            self.root = newRoot
-        else:
-            # Propagate split to parent node
-            pass
-
-    def split(self, node):
-        # Split the CFs in the node into two new nodes (simplified for now)
-        # For simplicity, we're dividing the CFs equally
-        half = len(node.CFs) // 2
-        newNode1 = CFTreeNode(isLeaf=True)
-        newNode2 = CFTreeNode(isLeaf=True)
-        newNode1.CFs = node.CFs[:half]
-        newNode2.CFs = node.CFs[half:]
-        return newNode1, newNode2
-
+        for point in self.dataPoints:
+            self.root.insert(point)
 
     def Phase2CondenseCFTree(self):
-        # Condense the CF tree by merging clusters based on threshold
+        """
+        Condense the CF tree by merging nodes, handling overflow, and pruning unnecessary nodes.
+        """
+        # Too advanced for my stupid example
         pass
 
     def Phase3GlobalClustering(self):
@@ -101,6 +45,17 @@ class BIRCH:
         pass
 
 # Example usage
-dataPoints = [[1, 0], [2, 0], [3, 0], [100, 0], [101, 0], [102, 0]]
-b = BIRCH(dataPoints=dataPoints, branchingFactor=50, threshold=10.0)
-b.run()
+dataPoints = [
+    [-100, 0], 
+    [1, 0], [2, 0], [3, 0], [4, 0],
+    [100, 0], [101, 0], [102, 0], 
+    [200, 0], [201, 0], [202, 0]
+]
+
+brch_my = BIRCH(branching_factor=2, threshold=10.0)
+brch_my.fit(dataPoints)
+print(brch_my.predict(dataPoints))
+
+brc_sk = Birch(n_clusters=None, threshold=10, branching_factor=2)
+brc_sk.fit(dataPoints)
+print(brc_sk.predict(dataPoints))
