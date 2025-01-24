@@ -22,6 +22,20 @@
             }
           },
           {
+            "id": "629bc20e2e0f6f8d",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "Explaination.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "Explaination"
+            }
+          },
+          {
             "id": "de7b69fce6663ea7",
             "type": "leaf",
             "state": {
@@ -33,7 +47,8 @@
               "title": "Drawing 2025-01-22 18.55.00.excalidraw"
             }
           }
-        ]
+        ],
+        "currentTab": 1
       }
     ],
     "direction": "vertical"
@@ -175,10 +190,11 @@
       "obsidian-excalidraw-plugin:Create new drawing": false
     }
   },
-  "active": "6568a6eb2e23786c",
+  "active": "629bc20e2e0f6f8d",
   "lastOpenFiles": [
-    "Excalidraw/Drawing 2025-01-22 18.55.00.excalidraw.md",
     "Understanding BIRCH.md",
+    "Explaination.md",
+    "Excalidraw/Drawing 2025-01-22 18.55.00.excalidraw.md",
     "Excalidraw",
     "Untitled.canvas"
   ]
