@@ -25,10 +25,8 @@ class ClusteringFeature:
     def radius(self):
         """Calculate the radius of the cluster."""
         centroid = self.centroid()
-        radius = sum(
-            np.sqrt((self.ss[i] / self.n) - centroid[i] ** 2) for i in range(len(self.ls))
-        )
-        return radius
+        variance = sum((self.ss[i] / self.n - centroid[i] ** 2) for i in range(len(self.ls)))
+        return np.sqrt(variance)
 
     def __repr__(self):
         return self.__str__()
@@ -76,12 +74,14 @@ class CFTree:
     def _insert_into_node(self, node, point):
         # 1. Identifying the Appropriate Leaf Node
         if node.is_leaf:
+            # Base case
             # Find or create a cluster in the leaf to add the point
             for cf in node.entries:
                 temp_cf = ClusteringFeature(cf.n, cf.ls[:], cf.ss[:])
                 temp_cf.add_point(point)
+                radius = temp_cf.radius()
                 
-                if temp_cf.radius() <= self.threshold:
+                if radius <= self.threshold:
                     # 2. Modifying the Leaf Node
                     cf.add_point(point)
                     return
@@ -90,28 +90,27 @@ class CFTree:
             new_cf = ClusteringFeature()
             new_cf.add_point(point)
             node.entries.append(new_cf)
+
+            # TODO: recursively update the parent to update the centroid summary information
+
             # Handle overflow
             if node.is_full():
                 self._split_node(node)
         else:
+            # Recursive step
             # Find the child node whose cluster is closest to the point
-            closest_idx = self._find_closest_child(node, point)
-            self._insert_into_node(node.children[closest_idx], point)
-            # Update the parent clustering features
-            node.entries[closest_idx].add_point(point)
+            i = self._find_closest_child(node, point)
+            self._insert_into_node(node.children[i], point)
             
             # 3. Splitting the Leaf Node (if needed)
             if node.is_full():
                 self._split_node(node)
 
     def _find_closest_child(self, node, point):
-        """Find the child whose CF is closest to the point."""
-        if len(node.children) > 0:
-            # TODO
-            print("INCORRECT RESULTS! This should also check for the children, but for this PoC it will only look for the entries")
-
+        """Find the child whose CF is closest to the point among the children of a node (not the children!)."""
         min_distance = float("inf")
-        closest_idx = -1
+        closest_i = -1
+
         for i, cf in enumerate(node.entries):
             # Calculate euclidean distance, without using the temporary data structure
             centroid = cf.centroid()
@@ -119,20 +118,23 @@ class CFTree:
 
             if distance < min_distance:
                 min_distance = distance
-                closest_idx = i
-        return closest_idx
+                closest_i = i
+
+        return closest_i
 
     def _split_node(self, node):
         """Split a node into two and adjust the tree structure."""
         if node.is_leaf:
             # Split leaf node
             mid = len(node.entries) // 2
+            # TODO: fix this, BIRCH requires selecting the farthest pair of entries as seeds for splitting
+            # To work this around, entries to the implementation should be filled in in ascending order
             new_node = CFNode(is_leaf=True, max_entries=self.branching_factor)
             new_node.entries = node.entries[mid:]
             node.entries = node.entries[:mid]
         else:
             # TODO
-            print("INCORRECT RESULTS! Split internal node in real implementation")
+            print("INCORRECT RESULTS! Split internal node needs to be implemented")
 
         self._modify_path_to_leaf(node, new_node)
     
@@ -140,9 +142,18 @@ class CFTree:
         # 4. Modifying the Path to the Leaf
         # Update parent
         if node == self.root:
+            # Create new root (internal node)
             new_root = CFNode(is_leaf=False, max_entries=self.branching_factor)
-            new_root.entries.append(ClusteringFeature())
-            new_root.entries[-1].merge(node.entries[0])
+            
+            # For each child (original node and new_node), create a CF entry 
+            # that merges ALL CFs in that child's entries
+            for child in [node, new_node]:
+                merged_cf = ClusteringFeature()
+                for cf in child.entries:
+                    merged_cf.merge(cf)  # Merge all CFs in the child
+                new_root.entries.append(merged_cf)
+            
+            # Link children to the new root
             new_root.children = [node, new_node]
             self.root = new_root
         else:
@@ -173,7 +184,7 @@ class CFTree:
 
 if __name__ == "__main__":
 
-    # ClusteringFeature:~
+    # Testing ClusteringFeature
     P1 = [1, 0]
     P2 = [2, 0]
     a = ClusteringFeature()
@@ -192,8 +203,11 @@ if __name__ == "__main__":
     print("Radius:", a.radius())
 
 
-    # CFTree:
+    # Testing CFTree
     tree = CFTree(threshold=4, branching_factor=4)
+
+    # Insertion should be done in ascending order for this implementation to work
+
     tree.insert([1, 0])
     tree.insert([2, 0])
 
@@ -203,12 +217,12 @@ if __name__ == "__main__":
     tree.insert([40, 0])
     tree.insert([40, 0])
 
-    tree.insert([100, 0])
-    tree.insert([101, 0])
+    tree.insert([100, 0]) # This is going to split the node
+    tree.insert([101, 0]) # This is going to use _find_closest_child and call _insert_into_node recursively
 
-    tree.insert([110, 0])
+    tree.insert([110, 0]) # This will create a new node in the children
 
-    tree.insert([3, 0])
+    tree.insert([3, 0]) # This will be embedded into an existing children
     
-
-    # print(tree)
+    print("TREE:")
+    print(tree)
