@@ -91,8 +91,6 @@ class CFTree:
             new_cf.add_point(point)
             node.entries.append(new_cf)
 
-            # TODO: recursively update the parent to update the centroid summary information
-
             # Handle overflow
             if node.is_full():
                 self._split_node(node)
@@ -101,6 +99,13 @@ class CFTree:
             # Find the child node whose cluster is closest to the point
             i = self._find_closest_child(node, point)
             self._insert_into_node(node.children[i], point)
+
+            # Create a new CF that merges all CFs in the child's entries
+            merged_cf = ClusteringFeature()
+            for cf in node.children[i].entries:
+                merged_cf.merge(cf)
+            # Replace the old CF entry for this child
+            node.entries[i] = merged_cf
             
             # 3. Splitting the Leaf Node (if needed)
             if node.is_full():
