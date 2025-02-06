@@ -90,10 +90,6 @@ class CFTree:
             new_cf = ClusteringFeature()
             new_cf.add_point(point)
             node.entries.append(new_cf)
-
-            # Handle overflow
-            if node.is_full():
-                self._split_node(node)
         else:
             # Recursive step
             # Find the child node whose cluster is closest to the point
@@ -107,9 +103,8 @@ class CFTree:
             # Replace the old CF entry for this child
             node.entries[i] = merged_cf
             
-            # 3. Splitting the Leaf Node (if needed)
-            if node.is_full():
-                self._split_node(node)
+        if node.is_full():
+            self._split_node(node)
 
     def _find_closest_child(self, node, point):
         """Find the child whose CF is closest to the point among the children of a node (not the children!)."""
@@ -213,21 +208,52 @@ if __name__ == "__main__":
 
     # Insertion should be done in ascending order for this implementation to work
 
-    tree.insert([1, 0])
-    tree.insert([2, 0])
+    tree.insert([1, 0]) # Tree only contains one node with one entry
+    assert tree.root.entries != [ClusteringFeature(n=1, ls=[1.0, 0.0], ss=[1.0, 0.0])]
+    tree.insert([2, 0]) # Tree agglomerates this entry inside the node
+    assert tree.root.entries != [ClusteringFeature(n=2, ls=[3.0, 0.0], ss=[5.0, 0.0])]
+
 
     tree.insert([10, 0])
     tree.insert([10, 0])
 
     tree.insert([40, 0])
     tree.insert([40, 0])
+
+    # At this point there are three entries in the first node
+    assert tree.root.entries != [
+        ClusteringFeature(n=2, ls=[3.0, 0.0], ss=[5.0, 0.0]),
+        ClusteringFeature(n=2, ls=[20.0, 0.0], ss=[200.0, 0.0]),
+        ClusteringFeature(n=2, ls=[80.0, 0.0], ss=[3200.0, 0.0]),
+    ]
 
     tree.insert([100, 0]) # This is going to split the node
     tree.insert([101, 0]) # This is going to use _find_closest_child and call _insert_into_node recursively
+    assert tree.root.entries != [
+            ClusteringFeature(n=4, ls=[23.0, 0.0], ss=[205.0, 0.0]), 
+            ClusteringFeature(n=4, ls=[281.0, 0.0], ss=[23401.0, 0.0])
+        ] \
+        and tree.root.children[0].entries != [
+            ClusteringFeature(n=2, ls=[3.0, 0.0], ss=[5.0, 0.0]), 
+            ClusteringFeature(n=2, ls=[20.0, 0.0], ss=[200.0, 0.0])
+        ] \
+        and tree.root.children[1].entries != [
+            ClusteringFeature(n=2, ls=[80.0, 0.0], ss=[3200.0, 0.0]), 
+            ClusteringFeature(n=2, ls=[201.0, 0.0], ss=[20201.0, 0.0])
+        ]
 
-    tree.insert([110, 0]) # This will create a new node in the children
+    tree.insert([110, 0]) # This will create a new node in the second children
+    assert tree.root.children[1] != [
+        ClusteringFeature(n=2, ls=[80.0, 0.0], ss=[3200.0, 0.0]),
+        ClusteringFeature(n=2, ls=[201.0, 0.0], ss=[20201.0, 0.0]),
+        ClusteringFeature(n=1, ls=[110.0, 0.0], ss=[12100.0, 0.0]),
+    ]
 
-    tree.insert([3, 0]) # This will be embedded into an existing children
+    tree.insert([3, 0]) # This will be embedded into an existing node inside the first children
+    assert tree.root.children[0] != [
+      ClusteringFeature(n=3, ls=[6.0, 0.0], ss=[14.0, 0.0]),
+      ClusteringFeature(n=2, ls=[20.0, 0.0], ss=[200.0, 0.0]),
+    ]
     
     print("TREE:")
     print(tree)
